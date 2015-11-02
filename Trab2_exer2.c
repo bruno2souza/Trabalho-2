@@ -1,36 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-struct arvore{
+struct arvore{			//estrutura a ser usada no programa
 	char nome[50];
-	int distancia;
+	int distancia;		//a variavel distancia servirá para saber qual a distancia em geracoes em relacao a raiz da arvore, que terá distancia=0
 	struct arvore* dir;
 	struct arvore* esq;
 };
 
-struct arvore* buscar(struct arvore* pessoa, char *son){
-	struct arvore* adr=(struct arvore*)-2;
-	if(pessoa==NULL){
+struct arvore* buscar(struct arvore* pessoa, char *son){		//funcao para realizar busca de uma pessoa na arvore
+	struct arvore* adr=(struct arvore*)-2;		//temos que nos certificar que o endereco do nó adr seja um que nao seja ocupado por nenhum lixo e nem por NULL, por isso é -2
+	if(pessoa==NULL){ 
 		return NULL;
 	}
-	if(strcmp(pessoa->nome, son)==0){
+	if(strcmp(pessoa->nome, son)==0){		//a funcao strcmp compara duas strings e retorna o valor de diferencas entre elas. Se essa diferenca for 0, significa que achamos o nó que estavamos procurando
 		adr=pessoa;
 	}
-	if(adr==-2){
+	if(adr==-2){			//caso contrario, devemos procurar à direita e à esquerda
 		adr = buscar(pessoa->esq, son);
 	}
 	if(adr==-2){
 		adr = buscar(pessoa->dir, son);
 	}
+	return(adr);
 }
 
-void inserir(struct arvore*pessoa, char *son, char *dad, char *mom){
+void inserir(struct arvore*pessoa, char *son, char *dad, char *mom){		//funcao para inserir uma nova tupla
 	struct arvore*atual=(struct arvore*)malloc (sizeof(struct arvore));
 	atual->esq=(struct arvore*)malloc (sizeof(struct arvore));
 	atual->dir=(struct arvore*)malloc (sizeof(struct arvore));
-	atual=buscar(pessoa, son);
+	atual=buscar(pessoa, son);		//o filho da nova tupla precisa ser alguem que ja existe na arvore. Precisamos achar essa pessoa
 	if(atual!=NULL){
-		strcpy(atual->esq->nome, dad);
+		strcpy(atual->esq->nome, dad);		//ocorre a alocacao do nome dos pais, e a determinacao de sua variavel distancia como uma a mais do que o filho
 		atual->esq->distancia=(atual->distancia)+1;
 		atual->esq->esq=NULL;
 		atual->esq->dir=NULL;
@@ -41,18 +42,18 @@ void inserir(struct arvore*pessoa, char *son, char *dad, char *mom){
 	}
 }
 
-void impgene(struct arvore* pessoa, int altura){
+void impgene(struct arvore* pessoa, int altura){		//funcao que imprime por geracoes
 	if(pessoa!=NULL){
-		if(pessoa->distancia==altura){
+		if(pessoa->distancia==altura){		//se a variavel distancia da pessoa for igual a um valor esperado, ela faz parte da geracao que queremos. Entao ela deve ser imprimida
 			printf("%s ", pessoa->nome);
 		}
 		printf("\n");
-		impgene(pessoa->esq, altura);
+		impgene(pessoa->esq, altura);		//essa funcao é chamada entao para a direita e para a esquerda do nó em que estamos
 		impgene(pessoa->dir, altura);		
 	}
 }
 
-int maiordistancia(struct arvore* pessoa, int maior){
+int maiordistancia(struct arvore* pessoa, int maior){		//funcao que determina qual é a maior distancia de algum membro da familia até a raiz
 	if(pessoa!=NULL){
 		maiordistancia(pessoa->esq, maior);
 		maiordistancia(pessoa->dir, maior);
@@ -63,7 +64,7 @@ int maiordistancia(struct arvore* pessoa, int maior){
 	return maior;
 }
 
-void labelled(struct arvore*pessoa){
+void labelled(struct arvore*pessoa){		//impressao em labelled bracketing
 	printf("[");
 	if(pessoa!=NULL){
 		printf("%s", pessoa->nome);
@@ -73,7 +74,7 @@ void labelled(struct arvore*pessoa){
 	printf("]");
 }
 
-void antepassados(struct arvore*pessoa, char *son){
+void antepassados(struct arvore*pessoa, char *son){		//impressao dos antepassados de certo alguem. Basta passar a localizacao dessa pessoa, e entao pedir para dar imprimir todos os nós abaixo deste
 	if(pessoa!=NULL){
 		if(strcmp(pessoa->nome, son)!=0){
 			printf("%s\n", pessoa->nome);
@@ -83,23 +84,23 @@ void antepassados(struct arvore*pessoa, char *son){
 	}
 }
 
-void parentesco(struct arvore *pessoa1, struct arvore *pessoa2){
+void parentesco(struct arvore *pessoa1, struct arvore *pessoa2){ //calcula-se o parentesco entre duas pessoas
 	int dif;
 	struct arvore *encontrado=(struct arvore*)malloc (sizeof(struct arvore));
 	if(pessoa1!=NULL && pessoa2!= NULL){
-		if(pessoa1->distancia==pessoa2->distancia){
+		if(pessoa1->distancia==pessoa2->distancia){			//se as duas pessoas estiverem a mesma distancia da raiz, elas serao da mesma geracao, e nao havera parentesco entre elas
 			printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);
 		}
-		if(pessoa1->distancia>pessoa2->distancia){
-			encontrado=buscar(pessoa1, pessoa2->nome);
+		if(pessoa1->distancia>pessoa2->distancia){		//checa-se se a primeira pessoa esta mais perto da raiz do que a segunda
+			encontrado=buscar(pessoa1, pessoa2->nome);		//caso esteja, busca-se a segunda pessoa entre os antepassados da primeira pessoa
 			if(encontrado==NULL){
-				printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);	
+				printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);	//se a segunda pessoa nao for encontrada entre os antepassados da primeira, nao ha grau de parentesco entre elas
 			}else{
-				dif=pessoa1->distancia-pessoa2->distancia;
+				dif=pessoa1->distancia-pessoa2->distancia;		//caso ela seja encontrada, o grau de parentesco entre elas será a diferenca das distancias que elas estao da raiz
 				printf("Entre %s e %s grau de parentesco %d\n", pessoa1->nome, pessoa2->nome, dif);
 			}
 		}
-		if(pessoa1->distancia<pessoa2->distancia){
+		if(pessoa1->distancia<pessoa2->distancia){		//o analogo acontece se a segunda pessoa estiver mais perto da raiz do que a primeira
 			encontrado=buscar(pessoa2, pessoa1->nome);
 			if(encontrado==NULL){
 				printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);		
@@ -111,7 +112,7 @@ void parentesco(struct arvore *pessoa1, struct arvore *pessoa2){
 	}
 }
 
-int lista(){
+int lista(){		//lista de operacoes na arvore
 	int opcao;
 	printf("Diga qual funcao voce quer realizar em sua arvore:\n");
 	printf("Opcao 1: imprimir membros da familia por geracao\n");
@@ -135,7 +136,7 @@ void main(){
 		printf("Por favor, diga um valor valido, maior ou igual a 1:\n");
 		scanf("%d", &n);
 	}
-	printf("Por favor, diga quais sao as tuplas, separando as pessoas por espaço, e as tuplas por Enter:\n");
+	printf("Por favor, diga quais sao as tuplas, separando as pessoas por espaço, e as tuplas por Enter:\n");		//a primeira tupla deve ser inserida separadamente
 	printf("(Lembre-se de comecar cada tupla pelo filho, seguido de seu pai e sua mae)\n");
 	struct arvore* pessoaraiz= (struct arvore*)malloc (sizeof(struct arvore));
 	pessoaraiz->dir=(struct arvore*)malloc (sizeof(struct arvore));
@@ -144,10 +145,10 @@ void main(){
 	scanf("%s", &dad);
 	scanf("%s", &mom);
 	strcpy(pessoaraiz->nome, son);
-	pessoaraiz->distancia=0;
+	pessoaraiz->distancia=0;		//a pessoa que sera a raiz recebe distancia igual a 0
 	pessoaraiz->dir=pessoaraiz->esq=NULL;
 	inserir(pessoaraiz, son, dad, mom);
-	while(i<=n){
+	while(i<=n){		//alocacao das demais tuplas
 		printf("Digite a tupla %d:\n", i);
 		scanf("%s", &son);
 		scanf("%s", &dad);
@@ -156,8 +157,8 @@ void main(){
 		i++;
 	}
 	int aux, reg=1;
-	while(reg==1){
-		switch(lista()){
+	while(reg==1){		//regulador para saber quando o usuario deseja acabar o programa oncontinuar nele
+		switch(lista()){		//lista de tarefas a serem realizadas de acordo com a decisao do usuario
 			case 1:
 				printf("Essa familia, mostrada por geracoes, eh:\n");
 				maior=maiordistancia(pessoaraiz, maior);
