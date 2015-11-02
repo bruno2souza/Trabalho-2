@@ -83,6 +83,34 @@ void antepassados(struct arvore*pessoa, char *son){
 	}
 }
 
+void parentesco(struct arvore *pessoa1, struct arvore *pessoa2){
+	int dif;
+	struct arvore *encontrado=(struct arvore*)malloc (sizeof(struct arvore));
+	if(pessoa1!=NULL && pessoa2!= NULL){
+		if(pessoa1->distancia==pessoa2->distancia){
+			printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);
+		}
+		if(pessoa1->distancia>pessoa2->distancia){
+			encontrado=buscar(pessoa1, pessoa2->nome);
+			if(encontrado==NULL){
+				printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);	
+			}else{
+				dif=pessoa1->distancia-pessoa2->distancia;
+				printf("Entre %s e %s grau de parentesco %d\n", pessoa1->nome, pessoa2->nome, dif);
+			}
+		}
+		if(pessoa1->distancia<pessoa2->distancia){
+			encontrado=buscar(pessoa2, pessoa1->nome);
+			if(encontrado==NULL){
+				printf("Entre %s e %s grau de parentesco 0\n", pessoa1->nome, pessoa2->nome);		
+			}else{
+				dif=pessoa2->distancia-pessoa1->distancia;
+				printf("Entre %s e %s grau de parentesco %d\n", pessoa1->nome, pessoa2->nome, dif);
+			}
+		}
+	}
+}
+
 int lista(){
 	int opcao;
 	printf("Diga qual funcao voce quer realizar em sua arvore:\n");
@@ -98,6 +126,9 @@ int lista(){
 void main(){
 	int n, i=2, j, maior=0;
 	char son[50], dad[50], mom[50];
+	char nome1[50], nome2[50];
+	struct arvore *pessoa1=(struct arvore*)malloc (sizeof(struct arvore));
+	struct arvore *pessoa2=(struct arvore*)malloc (sizeof(struct arvore));
 	printf("Vamos fazer uma arvore genealogica. Para tal, diga a quantidade de tuplas que serao inseridas:\n");
 	scanf("%d", &n);
 	while(n<1){
@@ -107,6 +138,8 @@ void main(){
 	printf("Por favor, diga quais sao as tuplas, separando as pessoas por espaço, e as tuplas por Enter:\n");
 	printf("(Lembre-se de comecar cada tupla pelo filho, seguido de seu pai e sua mae)\n");
 	struct arvore* pessoaraiz= (struct arvore*)malloc (sizeof(struct arvore));
+	pessoaraiz->dir=(struct arvore*)malloc (sizeof(struct arvore));
+	pessoaraiz->esq=(struct arvore*)malloc (sizeof(struct arvore));
 	scanf("%s", &son);
 	scanf("%s", &dad);
 	scanf("%s", &mom);
@@ -141,9 +174,16 @@ void main(){
 			case 3:
 				printf("Essa eh sua arvore em labelled bracketing:\n");
 				labelled(pessoaraiz);
+				printf("\n");
 			break;
 			case 4:
-				
+				printf("Entre quais pessoas voce deseja saber o grau de parentesco?\n");
+				scanf("%s", nome1);
+				scanf("%s", nome2);
+				pessoa1=buscar(pessoaraiz, nome1);
+				pessoa2=buscar(pessoaraiz, nome2);
+				parentesco(pessoa1, pessoa2);
+				printf("\n");
 			break;
 			case 5:
 				printf("Digite a tupla que voce quer inserir:\n");
