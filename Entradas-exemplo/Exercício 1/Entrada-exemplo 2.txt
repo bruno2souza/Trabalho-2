@@ -1,0 +1,10 @@
+Entrada exemplo:
+18
+9
+88
+29
+-1
+-3
+
+
+Como pode-se perceber, há 6 elementos nesta lista. Por isso, digite "6" quando for perguntado o número de nós que haverá em sua árvore.

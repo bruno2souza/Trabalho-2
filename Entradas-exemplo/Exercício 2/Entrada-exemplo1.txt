@@ -1,0 +1,8 @@
+Entrada-exemplo:
+
+Pedro João Maria
+João José Marília
+Maria Getúlio Laura
+José Maurício Catarina
+
+Repare que esta estrada exemplo posssui 4 tuplas, por isso, digite "4" quando for perguntado o número de tuplas que haverá em sua árvore.

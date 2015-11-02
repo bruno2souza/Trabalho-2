@@ -1,0 +1,18 @@
+Entrada exemplo:
+20
+9
+50
+6
+15
+30
+52
+51
+35
+25
+17
+10
+3
+22
+
+
+Como pode-se notar, há 14 elementos nessa lista, por isso, digite "14" quando for perguntado a quantidade de nós que terá a sua árvore.
