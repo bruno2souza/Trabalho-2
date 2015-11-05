@@ -1,0 +1,18 @@
+Entrada-exemplo:
+bruno
+ivo
+deise
+
+ivo
+jose
+maria
+
+deise
+desiderio
+vera
+
+maria
+getulio
+laura
+
+Como pode-se notar, há 4 tuplas nessa árvore. Por isso, informe o valor "4" quando lhe for perguntado a quantidade de tuplas presente em sua árvore

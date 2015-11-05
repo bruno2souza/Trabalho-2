@@ -8,35 +8,38 @@ struct arvore{			//estrutura a ser usada no programa
 	struct arvore* esq;
 };
 
-struct arvore* buscar(struct arvore* pessoa, char *son){		//funcao para realizar busca de uma pessoa na arvore
-	struct arvore* adr=(struct arvore*)-2;		//temos que nos certificar que o endereco do nó adr seja um que nao seja ocupado por nenhum lixo e nem por NULL, por isso é -2
-	if(pessoa==NULL){ 
-		return NULL;
+struct arvore* buscar(struct arvore* pessoa, char *son){		//funcao para realizar busca de uma pessoa na arvore	
+	struct arvore *adr=(struct arvore*)-2;			//temos que nos certificar que o endereco do nó adr seja um que nao seja ocupado por nenhum lixo e nem por NULL, por isso é -2
+	if(pessoa!=NULL){
+		if(strcmp(pessoa->nome, son)==0){		//a funcao strcmp compara duas strings e retorna o valor de diferencas entre elas. Se essa diferenca for 0, significa que achamos o nó que estavamos procurando
+			adr=pessoa;
+		}
+		if(adr==-2){			//caso contrario, devemos procurar à direita e à esquerda
+			adr= buscar(pessoa->esq, son);
+		}
+		if(adr==-2){
+			adr= buscar(pessoa->dir, son);
+		}
 	}
-	if(strcmp(pessoa->nome, son)==0){		//a funcao strcmp compara duas strings e retorna o valor de diferencas entre elas. Se essa diferenca for 0, significa que achamos o nó que estavamos procurando
-		adr=pessoa;
-	}
-	if(adr==-2){			//caso contrario, devemos procurar à direita e à esquerda
-		adr = buscar(pessoa->esq, son);
-	}
-	if(adr==-2){
-		adr = buscar(pessoa->dir, son);
-	}
-	return(adr);
+	return (adr);
 }
 
 void inserir(struct arvore*pessoa, char *son, char *dad, char *mom){		//funcao para inserir uma nova tupla
-	struct arvore*atual=(struct arvore*)malloc (sizeof(struct arvore));
+	struct arvore *aux=pessoa;
+	struct arvore *atual=NULL;
+	int incr;
+	atual=buscar(aux, son);
 	atual->esq=(struct arvore*)malloc (sizeof(struct arvore));
 	atual->dir=(struct arvore*)malloc (sizeof(struct arvore));
-	atual=buscar(pessoa, son);		//o filho da nova tupla precisa ser alguem que ja existe na arvore. Precisamos achar essa pessoa
+	incr=atual->distancia;		//o filho da nova tupla precisa ser alguem que ja existe na arvore. Precisamos achar essa pessoa
 	if(atual!=NULL){
 		strcpy(atual->esq->nome, dad);		//ocorre a alocacao do nome dos pais, e a determinacao de sua variavel distancia como uma a mais do que o filho
-		atual->esq->distancia=(atual->distancia)+1;
+		atual->esq->distancia=incr+1;
 		atual->esq->esq=NULL;
 		atual->esq->dir=NULL;
+		
 		strcpy(atual->dir->nome, mom);
-		atual->dir->distancia=(atual->distancia)+1;
+		atual->dir->distancia=incr+1;
 		atual->dir->esq=NULL;
 		atual->dir->dir=NULL;
 	}
@@ -47,21 +50,9 @@ void impgene(struct arvore* pessoa, int altura){		//funcao que imprime por gerac
 		if(pessoa->distancia==altura){		//se a variavel distancia da pessoa for igual a um valor esperado, ela faz parte da geracao que queremos. Entao ela deve ser imprimida
 			printf("%s ", pessoa->nome);
 		}
-		printf("\n");
 		impgene(pessoa->esq, altura);		//essa funcao é chamada entao para a direita e para a esquerda do nó em que estamos
 		impgene(pessoa->dir, altura);		
 	}
-}
-
-int maiordistancia(struct arvore* pessoa, int maior){		//funcao que determina qual é a maior distancia de algum membro da familia até a raiz
-	if(pessoa!=NULL){
-		maiordistancia(pessoa->esq, maior);
-		maiordistancia(pessoa->dir, maior);
-		if(pessoa->distancia>maior){
-			maior=pessoa->distancia;
-		}
-	}
-	return maior;
 }
 
 void labelled(struct arvore*pessoa){		//impressao em labelled bracketing
@@ -114,7 +105,7 @@ void parentesco(struct arvore *pessoa1, struct arvore *pessoa2){ //calcula-se o 
 
 int lista(){		//lista de operacoes na arvore
 	int opcao;
-	printf("Diga qual funcao voce quer realizar em sua arvore:\n");
+	printf("\nDiga qual funcao voce quer realizar em sua arvore:\n");
 	printf("Opcao 1: imprimir membros da familia por geracao\n");
 	printf("Opcao 2: imprimir os antepassados de um individuo\n");
 	printf("Opcao 3: imprimir em labelled bracketing\n");
@@ -136,49 +127,56 @@ void main(){
 		printf("Por favor, diga um valor valido, maior ou igual a 1:\n");
 		scanf("%d", &n);
 	}
-	printf("Por favor, diga quais sao as tuplas, separando as pessoas por espaço, e as tuplas por Enter:\n");		//a primeira tupla deve ser inserida separadamente
-	printf("(Lembre-se de comecar cada tupla pelo filho, seguido de seu pai e sua mae)\n");
+	printf("Por favor, diga quais sao as tuplas, separando-as por Enter:\n");		//a primeira tupla deve ser inserida separadamente
+	printf("Digite o nome do filho:\n");
 	struct arvore* pessoaraiz= (struct arvore*)malloc (sizeof(struct arvore));
 	pessoaraiz->dir=(struct arvore*)malloc (sizeof(struct arvore));
 	pessoaraiz->esq=(struct arvore*)malloc (sizeof(struct arvore));
 	scanf("%s", &son);
+	printf("Agora digite o nome do pai:\n");
 	scanf("%s", &dad);
+	printf("Agora digite o nome da mae:\n");
 	scanf("%s", &mom);
 	strcpy(pessoaraiz->nome, son);
 	pessoaraiz->distancia=0;		//a pessoa que sera a raiz recebe distancia igual a 0
 	pessoaraiz->dir=pessoaraiz->esq=NULL;
 	inserir(pessoaraiz, son, dad, mom);
-	while(i<=n){		//alocacao das demais tuplas
-		printf("Digite a tupla %d:\n", i);
-		scanf("%s", &son);
-		scanf("%s", &dad);
-		scanf("%s", &mom);
-		inserir(pessoaraiz, son, dad, mom);
-		i++;
+	if(n>1){
+		while(i<=n){		//alocacao das demais tuplas
+			printf("Digite a tupla %d:\n", i);
+			printf("Digite o nome do filho:\n");
+			scanf("%s", &son);
+			printf("Digite o nome do pai:\n");
+			scanf("%s", &dad);
+			printf("Digite o nome da mae:\n");
+			scanf("%s", &mom);
+			inserir(pessoaraiz, son, dad, mom);
+			i++;
+		}
 	}
 	int aux, reg=1;
 	while(reg==1){		//regulador para saber quando o usuario deseja acabar o programa oncontinuar nele
 		switch(lista()){		//lista de tarefas a serem realizadas de acordo com a decisao do usuario
 			case 1:
-				printf("Essa familia, mostrada por geracoes, eh:\n");
-				maior=maiordistancia(pessoaraiz, maior);
-				for(j=0;j<=maior;j++){
+				printf("\nEssa familia, mostrada por geracoes, eh:\n");
+				for(j=0;j<=n;j++){
 					impgene(pessoaraiz, j);
+					printf("\n");
 				}
 			break;
 			case 2:
-				printf("De qual pessoa voce quer saber os antepassados?\n");
+				printf("\nDe qual pessoa voce quer saber os antepassados?\n");
 				scanf("%s", son);
-				printf("Estes sao seus antepassados:\n");
+				printf("\nEstes sao seus antepassados:\n");
 				antepassados(buscar(pessoaraiz, son), son);
 			break;
 			case 3:
-				printf("Essa eh sua arvore em labelled bracketing:\n");
+				printf("\nEssa eh sua arvore em labelled bracketing:\n");
 				labelled(pessoaraiz);
 				printf("\n");
 			break;
 			case 4:
-				printf("Entre quais pessoas voce deseja saber o grau de parentesco?\n");
+				printf("\nEntre quais pessoas voce deseja saber o grau de parentesco?\n");
 				scanf("%s", nome1);
 				scanf("%s", nome2);
 				pessoa1=buscar(pessoaraiz, nome1);
@@ -187,16 +185,16 @@ void main(){
 				printf("\n");
 			break;
 			case 5:
-				printf("Digite a tupla que voce quer inserir:\n");
+				printf("\nDigite a tupla que voce quer inserir:\n");
 				scanf("%s", son);
 				scanf("%s", dad);
 				scanf("%s", mom);
 				inserir(pessoaraiz, son, dad, mom);
 			break;
 			default:
-				printf("Desculpe, mas voce entrou com um valor invalido\n");
+				printf("\nDesculpe, mas voce entrou com um valor invalido\n");
 		}
-		printf("Deseja continuar no programa?\n");
+		printf("\nDeseja continuar no programa?\n");
 		printf("1- SIM      2- NAO\n");
 		scanf("%d", &aux);
 		if(aux==1){
