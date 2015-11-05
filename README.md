@@ -5,7 +5,9 @@ Responsáveis pelo trabalho:
 
 1- Bruno Henrique de Souza nº USP: 9311685
 
-2- Bruno Ávila nº USP:
+2- Bruno Ávila nº USP: 9012667
+
+3- Evandro de Castro Pinto nº USP: 9312856
 
 
 O repositório deste trabalho contém:
